@@ -220,7 +220,7 @@ bouleSimulation = PanedWindow(main, bg="white")
 footer = Frame(pyps, bg="#232369")
 footer.place(relx=0, rely=0.95, relwidth=1, relheight=0.05)
 
-footerCredits = Label(footer, text="Version 1.0 | Par Nizar", bg="#232369", fg="white", font=mainFont)
+footerCredits = Label(footer, text="Version 1.0", bg="#232369", fg="white", font=mainFont)
 footerCredits.place(relx=0.5, rely=0.5, anchor=CENTER)
 
 
