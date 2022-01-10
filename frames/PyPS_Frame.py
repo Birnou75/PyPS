@@ -18,6 +18,15 @@ pyps.minsize(width=700, height=625)
 # Fonctions et variables relatifs au GUI
 # --------------------------------------------------------------------
 
+# Listes d'élements en fonction de leurs attributs
+BgFgElements = []
+FgBgElements = []
+BgElements = []
+FgElements = []
+scrollElements = []
+borderElements = []
+
+
 # Fonctions générales
 def changePaned(panedToDestroy, panedToPlace, buttonPanedName):
     panedToDestroy.place_forget()
@@ -45,10 +54,7 @@ def changePaned(panedToDestroy, panedToPlace, buttonPanedName):
 def simulationSettings(paned, enable):
     if(paned == penduleSimulation):
         if(enable == True):
-            toolsScrollBar.configure(command=toolsButtons.yview)
-            toolsButtons.configure(yscrollcommand=toolsScrollBar.set)
-            toolsButtons.place(rely=0.12, relx=0.06, relwidth=0.82, relheight=0.8)
-            toolsScrollBar.pack(side=RIGHT, fill=Y)
+            toolsButtons.place(rely=0.12, relx=0.087, relwidth=0.82, relheight=0.8)
 
             angle.pack(fill=X)
             angle2.pack(fill=X)
@@ -56,7 +62,6 @@ def simulationSettings(paned, enable):
             angle4.pack(fill=X)
             
         else:
-            toolsScrollBar.pack_forget()
             toolsButtons.place_forget()
             angle.pack_forget()
             angle2.pack_forget()
@@ -115,35 +120,61 @@ def changeT(newT):
 mainColorStr = "#232369"
 secondaryColorStr = "#ffffff"
 
+def changeColorElements(colorPlace, color):
+    if(colorPlace == 1):
+        global mainColorStr
+        mainColorStr = color
+        for i in BgFgElements:
+            i['bg'] = mainColorStr
+        for i in FgBgElements:
+            i['fg'] = mainColorStr
+        for i in scrollElements:
+            i['bg'] = mainColorStr
+        for i in BgElements:
+            i['bg'] = mainColorStr
+    elif(colorPlace == 2):
+        global secondaryColorStr
+        secondaryColorStr = color
+        for i in BgFgElements:
+            i['fg'] = secondaryColorStr
+        for i in FgBgElements:
+            i['bg'] = secondaryColorStr
+        for i in scrollElements:
+            i['fg'] = secondaryColorStr
+            i['troughcolor'] = secondaryColorStr
+        for i in FgElements:
+            i['bg'] = secondaryColorStr
+        for i in borderElements:
+            i['highlightbackground'] = secondaryColorStr
+
 def convertRGBtoHex(red, green, blue):
     redHex = format(red, "02x")
     greenHex = format(green, "02x")
     blueHex = format(blue, "02x")
-    
     hexColor = ("#" + redHex + greenHex + blueHex)
     return hexColor
     
-def visualizeColor(object, red, green, blue):
+def visualizeColor(colorPlace, red, green, blue):
     hexColor = convertRGBtoHex(red, green, blue)
-    object['bg'] = hexColor
+    changeColorElements(colorPlace, hexColor)
 
 def changeRedMainColor(newRed):
-    visualizeColor(visualizeMainColor, int(newRed), greenMainColor.get(), blueMainColor.get())
+    visualizeColor(1, int(newRed), greenMainColor.get(), blueMainColor.get())
     
 def changeGreenMainColor(newGreen):
-    visualizeColor(visualizeMainColor, redMainColor.get(), int(newGreen), blueMainColor.get())
+    visualizeColor(1, redMainColor.get(), int(newGreen), blueMainColor.get())
     
 def changeBlueMainColor(newBlue):
-    visualizeColor(visualizeMainColor, redMainColor.get(), greenMainColor.get(), int(newBlue))
+    visualizeColor(1, redMainColor.get(), greenMainColor.get(), int(newBlue))
     
 def changeRedSecondaryColor(newRed):
-    visualizeColor(visualizeSecondaryColor, int(newRed), greenSecondaryColor.get(), blueSecondaryColor.get())
+    visualizeColor(2, int(newRed), greenSecondaryColor.get(), blueSecondaryColor.get())
     
 def changeGreenSecondaryColor(newGreen):
-    visualizeColor(visualizeSecondaryColor, redSecondaryColor.get(), int(newGreen), blueSecondaryColor.get())
+    visualizeColor(2, redSecondaryColor.get(), int(newGreen), blueSecondaryColor.get())
     
 def changeBlueSecondaryColor(newBlue):
-    visualizeColor(visualizeSecondaryColor, redSecondaryColor.get(), greenSecondaryColor.get(), int(newBlue))
+    visualizeColor(2, redSecondaryColor.get(), greenSecondaryColor.get(), int(newBlue))
 	
 
 mainFont = "Roboto 12 bold"
@@ -161,68 +192,97 @@ pyps.geometry("900x600")
 
 
 # En-tête #
-header = Frame(pyps, bg="#232369")
+header = Frame(pyps, bg=mainColorStr, highlightbackground=secondaryColorStr)
 header.place(relx=0, rely=0, relwidth=1, relheight=0.05)
+BgElements.append(header)
+borderElements.append(header)
 
-headerTitle = Label(header, text="Accueil", bg="#232369", fg=secondaryColorStr, font=mainFont)
+headerTitle = Label(header, text="Accueil", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 headerTitle.place(relx=0.5, rely=0.5, anchor=CENTER)
+BgFgElements.append(headerTitle)
 
-homeButton = Button(header, text="Accueil", bg="#232369", fg=secondaryColorStr, cursor="hand2", font=mainFont)
-
+homeButton = Button(header, text="Accueil", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", font=mainFont)
+BgFgElements.append(homeButton)
 
 # Menu #
-menu = Frame(pyps, bg=secondaryColorStr, highlightthickness=2)
+menu = Frame(pyps, bg=secondaryColorStr, highlightbackground=secondaryColorStr, highlightthickness=2)
 menu.place(relx=0, rely=0.05, relwidth=0.3, relheight=0.9)
+FgElements.append(menu)
+borderElements.append(menu)
 
-tools = Frame(menu, bg="#232369")
+tools = Frame(menu, bg=mainColorStr, highlightbackground=secondaryColorStr)
 tools.place(relx=0.05, rely=0.05, relwidth=0.90, relheight=0.65)
+BgElements.append(tools)
+borderElements.append(tools)
 
-chooseTools = Label(tools, text="Choississez une simulation", bg="#232369", fg=secondaryColorStr, font=mainFont)
+chooseTools = Label(tools, text="Choississez une simulation", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 chooseTools.place(relx=0.5, rely=0.5, anchor=CENTER)
+BgFgElements.append(chooseTools)
 
-options = Button(menu, text="Options", bg="#232369", fg=secondaryColorStr, cursor="hand2", command=lambda:changePaned(home, optionPaned, options), font=mainFont)
+options = Button(menu, text="Options", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", command=lambda:changePaned(home, optionPaned, options), font=mainFont)
 options.place(relx=0.05, rely=0.74, relwidth=0.90, relheight=0.10)
+BgFgElements.append(options)
 
-creditsMenu = Button(menu, text="Histoire - Credits", bg="#232369", fg=secondaryColorStr, cursor="hand2", font=mainFont)
+creditsMenu = Button(menu, text="Histoire - Credits", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", font=mainFont)
 creditsMenu.place(relx=0.05, rely=0.87, relwidth=0.90, relheight=0.10)
+BgFgElements.append(creditsMenu)
 
 
 # Principal (Choix simulations) #
-main = Frame(pyps, bg=secondaryColorStr)
+main = Frame(pyps, bg=secondaryColorStr, highlightbackground=secondaryColorStr)
 main.place(relx=0.3, rely=0.05, relwidth=0.7, relheight=0.9)
+FgElements.append(main)
+borderElements.append(main)
 
 home = PanedWindow(main, bg=secondaryColorStr)
 home.place(relx=0.01, rely=0.01, relwidth=0.98, relheight=0.98)
+FgElements.append(home)
 
-penduleButton = Button(home, text="Pendule simple", bg="#232369", fg=secondaryColorStr, cursor="hand2", command=lambda:changePaned(home, penduleSimulation, penduleButton), font=mainFont)
+penduleButton = Button(home, text="Pendule simple", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", command=lambda:changePaned(home, penduleSimulation, penduleButton), font=mainFont)
 penduleButton.place(relx=0.1, rely=0.1, relwidth=0.35, relheight=0.35)
+BgFgElements.append(penduleButton)
 
-penduleNButton = Button(home, text="Pendule de Newton", bg="#232369", fg=secondaryColorStr, cursor="hand2", command=lambda:changePaned(home, penduleNSimulation, penduleNButton), font=mainFont)
+penduleNButton = Button(home, text="Pendule de Newton", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", command=lambda:changePaned(home, penduleNSimulation, penduleNButton), font=mainFont)
 penduleNButton.place(relx=0.55, rely=0.1, relwidth=0.35, relheight=0.35)
+BgFgElements.append(penduleNButton)
 
-bouleButton = Button(home, text="Chute d'une boule", bg="#232369", fg=secondaryColorStr, cursor="hand2", command=lambda:changePaned(home, bouleSimulation, bouleButton), font=mainFont)
+bouleButton = Button(home, text="Chute d'une boule", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", command=lambda:changePaned(home, bouleSimulation, bouleButton), font=mainFont)
 bouleButton.place(relx=0.1, rely=0.55, relwidth=0.35, relheight=0.35)
+BgFgElements.append(bouleButton)
 
-soonButton = Button(home, text="Bientôt..", bg="#232369", fg=secondaryColorStr, cursor="hand2", font=mainFont)
+soonButton = Button(home, text="Bientôt..", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", font=mainFont)
 soonButton.place(relx=0.55, rely=0.55, relwidth=0.35, relheight=0.35)
+BgFgElements.append(soonButton)
 
 # Panel "Options"
 
 optionPaned = PanedWindow(main, bg=secondaryColorStr)
+FgElements.append(optionPaned)
 
-colorOptions = Canvas(optionPaned, bg="#232369")
+colorOptions = Canvas(optionPaned, bg=mainColorStr, highlightbackground=secondaryColorStr)
 colorOptions.place(relx=0.025, rely=0.05, relwidth=0.95, relheight=0.7)
+BgElements.append(colorOptions)
+borderElements.append(colorOptions)
 
-titleColorOptions = Label(colorOptions, text="Couleurs", bg="#232369", fg=secondaryColorStr, font=mainFont)
+titleColorOptions = Label(colorOptions, text="Couleurs", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 titleColorOptions.place(relx=0.5, rely=0.07, anchor=CENTER)
+BgFgElements.append(titleColorOptions)
 
-mainColor = Canvas(colorOptions, bg="#232369")
+mainColor = Canvas(colorOptions, bg=mainColorStr, highlightbackground=secondaryColorStr)
 mainColor.place(relx=0.04, rely=0.18, relwidth=0.45, relheight=0.72)
+BgElements.append(mainColor)
+borderElements.append(mainColor)
 
-redMainColor = Scale(mainColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Rouge', bg="#232369", fg=secondaryColorStr, troughcolor="red", command=changeRedMainColor, font=mainFont)
-greenMainColor = Scale(mainColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Vert', bg="#232369", fg=secondaryColorStr, troughcolor="green", command=changeGreenMainColor, font=mainFont)
-blueMainColor = Scale(mainColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Bleu', bg="#232369", fg=secondaryColorStr, troughcolor="blue", command=changeBlueMainColor, font=mainFont)
-visualizeMainColor = Canvas(mainColor, bg="#232369")
+redMainColor = Scale(mainColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Rouge', bg=mainColorStr, fg=secondaryColorStr, troughcolor="red", command=changeRedMainColor, font=mainFont)
+greenMainColor = Scale(mainColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Vert', bg=mainColorStr, fg=secondaryColorStr, troughcolor="green", command=changeGreenMainColor, font=mainFont)
+blueMainColor = Scale(mainColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Bleu', bg=mainColorStr, fg=secondaryColorStr, troughcolor="blue", command=changeBlueMainColor, font=mainFont)
+visualizeMainColor = Canvas(mainColor, bg=mainColorStr, highlightbackground=secondaryColorStr)
+
+BgFgElements.append(redMainColor)
+BgFgElements.append(greenMainColor)
+BgFgElements.append(blueMainColor)
+BgElements.append(visualizeMainColor)
+borderElements.append(visualizeMainColor)
 
 redMainColor.pack(fill=X)
 redMainColor.set(35)
@@ -232,19 +292,29 @@ blueMainColor.pack(fill=X)
 blueMainColor.set(105)
 visualizeMainColor.pack(fill=X)
 
-titleMainColor = Label(colorOptions, text="Principale", bg="#232369", fg=secondaryColorStr, font=mainFont)
+titleMainColor = Label(colorOptions, text="Principale", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 titleMainColor.place(relx=0.27, rely=0.14, anchor=CENTER)
+BgFgElements.append(titleMainColor)
 
-secondaryColor = Canvas(colorOptions, bg="#232369")
+secondaryColor = Canvas(colorOptions, bg=mainColorStr, highlightbackground=secondaryColorStr)
 secondaryColor.place(relx=0.51, rely=0.18, relwidth=0.45, relheight=0.72)
+BgElements.append(secondaryColor)
+borderElements.append(secondaryColor)
 
-titleSecondaryColor = Label(colorOptions, text="Secondaire", bg="#232369", fg=secondaryColorStr, font=mainFont)
+titleSecondaryColor = Label(colorOptions, text="Secondaire", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 titleSecondaryColor.place(relx=0.74, rely=0.14, anchor=CENTER)
+BgFgElements.append(titleSecondaryColor)
 
-redSecondaryColor = Scale(secondaryColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Rouge', bg="#232369", fg=secondaryColorStr, troughcolor="red", command=changeRedSecondaryColor, font=mainFont)
-greenSecondaryColor = Scale(secondaryColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Vert', bg="#232369", fg=secondaryColorStr, troughcolor="green", command=changeGreenSecondaryColor, font=mainFont)
-blueSecondaryColor = Scale(secondaryColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Bleu', bg="#232369", fg=secondaryColorStr, troughcolor="blue", command=changeBlueSecondaryColor, font=mainFont)
-visualizeSecondaryColor = Canvas(secondaryColor, bg=secondaryColorStr)
+redSecondaryColor = Scale(secondaryColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Rouge', bg=mainColorStr, fg=secondaryColorStr, troughcolor="red", command=changeRedSecondaryColor, font=mainFont)
+greenSecondaryColor = Scale(secondaryColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Vert', bg=mainColorStr, fg=secondaryColorStr, troughcolor="green", command=changeGreenSecondaryColor, font=mainFont)
+blueSecondaryColor = Scale(secondaryColor, orient="horizontal", from_=0, to=255, resolution=1, tickinterval=255, label='Bleu', bg=mainColorStr, fg=secondaryColorStr, troughcolor="blue", command=changeBlueSecondaryColor, font=mainFont)
+visualizeSecondaryColor = Canvas(secondaryColor, bg=secondaryColorStr, highlightbackground=secondaryColorStr)
+
+BgFgElements.append(redSecondaryColor)
+BgFgElements.append(greenSecondaryColor)
+BgFgElements.append(blueSecondaryColor)
+FgElements.append(visualizeSecondaryColor)
+borderElements.append(visualizeSecondaryColor)
 
 redSecondaryColor.pack(fill=X)
 redSecondaryColor.set(255)
@@ -256,24 +326,35 @@ visualizeSecondaryColor.pack(fill=X)
 
 # Panel de la simulation "Pendule"
 penduleSimulation = PanedWindow(main, bg=secondaryColorStr)
+FgElements.append(penduleSimulation)
 
-toolsButtons = Canvas(tools, bg="#232369")
-toolsScrollBar = Scrollbar(tools, orient=VERTICAL)
+toolsButtons = Canvas(tools, bg=mainColorStr, highlightbackground=secondaryColorStr)
+FgElements.append(toolsButtons)
+borderElements.append(toolsButtons)
 
-angle = Scale(toolsButtons, orient="horizontal", from_=0, to=180, resolution=1, tickinterval=90, label='Angle (deg)', bg="#232369", fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeThetaMax, font=mainFont)
-angle2 = Scale(toolsButtons, orient="horizontal", from_=1, to=3, resolution=0.01, tickinterval=1, label='Longueur du fil (mètres)', bg="#232369", fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeR, font=mainFont)
-angle3 = Scale(toolsButtons, orient="horizontal", from_=1, to=10, resolution=1, tickinterval=2, label='Gravité (lieu)', bg="#232369", fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeG, font=mainFont)
-angle4 = Scale(toolsButtons, orient="horizontal", from_=10, to=100, resolution=1, tickinterval=30, label='Temps de la simulation (sec)', bg="#232369", fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeT, font=mainFont)
+angle = Scale(toolsButtons, orient="horizontal", from_=0, to=180, resolution=1, tickinterval=90, label='Angle (deg)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeThetaMax, font=mainFont)
+angle2 = Scale(toolsButtons, orient="horizontal", from_=1, to=3, resolution=0.01, tickinterval=1, label='Longueur du fil (mètres)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeR, font=mainFont)
+angle3 = Scale(toolsButtons, orient="horizontal", from_=1, to=10, resolution=1, tickinterval=2, label='Gravité (lieu)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeG, font=mainFont)
+angle4 = Scale(toolsButtons, orient="horizontal", from_=10, to=100, resolution=1, tickinterval=30, label='Temps de la simulation (sec)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeT, font=mainFont)
 
-infosPendule = Label(penduleSimulation, text="Période : 0 s", bg="#232369", fg=secondaryColorStr, font=mainFont)
+scrollElements.append(angle)
+scrollElements.append(angle2)
+scrollElements.append(angle3)
+scrollElements.append(angle4)
+
+infosPendule = Label(penduleSimulation, text="Période : 0 s", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 infosPendule.place(relx=0.6, rely=0.9, relwidth=0.4, relheight=0.09)
+BgFgElements.append(infosPendule)
 
 	# Animation, partie majeure
-animationPendule = Canvas(penduleSimulation, bg="#232369")
+animationPendule = Canvas(penduleSimulation, bg=mainColorStr, highlightbackground=secondaryColorStr)
 animationPendule.place(relx=0.025, rely=0.05, relheight=0.8, relwidth=0.95)
+BgElements.append(animationPendule)
+borderElements.append(animationPendule)
 
-graphButton = Button(penduleSimulation, text="Lacher le pendule", bg="#232369", fg=secondaryColorStr, cursor="hand2", command=lambda:penduleAnimation(g, t), font=mainFont)
+graphButton = Button(penduleSimulation, text="Lacher le pendule", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", command=lambda:penduleAnimation(g, t), font=mainFont)
 graphButton.place(relx=0.025, rely=0.92, relwidth=0.3, relheight=0.07)
+BgFgElements.append(graphButton)
 
 penduleFig = Figure(figsize=(4, 4), dpi=100)
 pendulePlot = penduleFig.add_subplot(111)
@@ -298,17 +379,22 @@ animationCanvas.get_tk_widget().place(relx=0.5, rely=0.5, anchor=CENTER)
 
 # Panel de la simulation "Pendule de Newton"
 penduleNSimulation = PanedWindow(main, bg=secondaryColorStr)
+FgElements.append(penduleNSimulation)
 
 # Panel de la simulation "Boule"
 bouleSimulation = PanedWindow(main, bg=secondaryColorStr)
+FgElements.append(bouleSimulation)
 
 
 # Pied de page #
-footer = Frame(pyps, bg="#232369")
+footer = Frame(pyps, bg=mainColorStr, highlightbackground=secondaryColorStr)
 footer.place(relx=0, rely=0.95, relwidth=1, relheight=0.05)
+BgElements.append(footer)
+borderElements.append(footer)
 
-footerCredits = Label(footer, text="Version 1.0 | Par Nizar et Loïc", bg="#232369", fg=secondaryColorStr, font=mainFont)
+footerCredits = Label(footer, text="Version 1.0 | Par Nizar et Loïc", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 footerCredits.place(relx=0.5, rely=0.5, anchor=CENTER)
+BgFgElements.append(footerCredits)
 
 
 # Logo #
