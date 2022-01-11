@@ -3,11 +3,15 @@
 # --------------------------------------------------------------------
 # Importations / Initialisation de la fenêtre
 # --------------------------------------------------------------------
+import os
 
 from tkinter import *
+import tkinter.filedialog
+
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 from math import *
 
 pyps = Tk()
@@ -17,6 +21,8 @@ pyps.minsize(width=700, height=625)
 # --------------------------------------------------------------------
 # Fonctions et variables relatifs au GUI
 # --------------------------------------------------------------------
+saveConfigPath="Desktop/NSI/PyPS/saves/"
+
 
 # Listes d'élements en fonction de leurs attributs
 BgFgElements = []
@@ -50,6 +56,10 @@ def changePaned(panedToDestroy, panedToPlace, buttonPanedName):
         tools.place(relx=0.05, rely=0.05, relwidth=0.90, relheight=0.65)
         options.place(relx=0.05, rely=0.74, relwidth=0.90, relheight=0.10)
         creditsMenu.place(relx=0.05, rely=0.87, relwidth=0.90, relheight=0.10)
+    if(panedToPlace == optionPaned):
+        tools.place_forget()
+        panedToPlace.place_forget()
+        panedToPlace.place(relx=0.01, rely=0.07, relwidth=0.98, relheight=0.86)
         
 def simulationSettings(paned, enable):
     if(paned == penduleSimulation):
@@ -72,14 +82,16 @@ def simulationSettings(paned, enable):
 def updatePenduleAnimation(thetaMaxUpdate, rUpdate, gUpdate, thetaUpdate):
 	pendulePlot.clear()
 	
-	ax.grid(True)
 	ax.spines['left'].set_position('zero')
 	ax.spines['bottom'].set_position('zero')
-	pendulePlot.set_xlim([-pi, pi])
-	pendulePlot.set_ylim([-pi, pi])
+	pendulePlot.set_xlim([-3.5, 3.5])
+	pendulePlot.set_ylim([-3.5, 3.5])
+    pendulePlot.axis("off")
 
-	pendulePlot.scatter([0, rUpdate*cos(thetaUpdate-pi/2)], [0, rUpdate*sin(thetaUpdate-pi/2)])
-	pendulePlot.plot([0, rUpdate*cos(thetaUpdate-pi/2)], [0, rUpdate*sin(thetaUpdate-pi/2)])
+    pendulePlot.scatter([0, -3.5, 3.5], [0, 0, 0], s=0)
+    pendulePlot.plot([-3.5, 3.5], [0, 0], c="black")
+	pendulePlot.scatter(rUpdate*cos(thetaUpdate-pi/2), rUpdate*sin(thetaUpdate-pi/2), s=500, c="orange", zorder=2)
+	pendulePlot.plot([0, rUpdate*cos(thetaUpdate-pi/2)], [0, rUpdate*sin(thetaUpdate-pi/2)], c="red", zorder=1)
 	
 	animationCanvas.draw()
 	
@@ -116,7 +128,7 @@ def changeT(newT):
 	t = float(newT)
 
 # Fonctions relatifs aux "Options"
-
+    # Couleurs
 mainColorStr = "#232369"
 secondaryColorStr = "#ffffff"
 
@@ -175,6 +187,41 @@ def changeGreenSecondaryColor(newGreen):
     
 def changeBlueSecondaryColor(newBlue):
     visualizeColor(2, redSecondaryColor.get(), greenSecondaryColor.get(), int(newBlue))
+	
+	# Sauvegarde
+def saveConfig():
+    saveConfig = tkinter.filedialog.asksaveasfilename(title="Enregistrer une sauvegarde", filetypes=[("Fichier texte", ".txt")],              initialfile="Sauvegarde_PyPS.txt", defaultextension=".txt", initialdir=saveConfigPath, parent=pyps)
+    saveConfigFile = open(saveConfig, "w")
+    
+    fileLines = [
+    "Fichier de sauvegarde | PyPS", 
+    "", 
+    "Pendule :", 
+    "Angle = {}".format(angle.get()), 
+    "Rayon = {}".format(angle2.get()), 
+    "Gravité = {}".format(angle3.get()), 
+    "Temps = {}".format(angle4.get()), 
+    "", 
+    "Boule :", 
+    "", 
+    "Options :", 
+    ("Couleurs = " + str(redMainColor.get()) + str(greenMainColor.get()) + str(blueMainColor.get()), + str(redSecondaryColor.get()), str(greenSecondaryColor.get()) + str(blueSecondaryColor.get()))
+    ]
+    
+    for i in fileLines:
+        saveConfigFile.write(i + " \n")
+    saveConfigFile.close()
+    
+def openConfig():
+    openConfig = tkinter.filedialog.askopenfilename(title="Charger une sauvegarde", filetypes=[("Fichier texte", ".txt")], multiple=False,  initialfile="Sauvegarde_PyPS.txt", defaultextension=".txt", initialdir=saveConfigPath, parent=pyps)
+    openConfigFile = open(openConfig, "r")
+    
+    linesSaveFile = openConfigFile.readlines()
+    print(linesSaveFile)
+    
+    openConfigFile.close()
+    
+    
 	
 
 mainFont = "Roboto 12 bold"
@@ -255,12 +302,12 @@ soonButton.place(relx=0.55, rely=0.55, relwidth=0.35, relheight=0.35)
 BgFgElements.append(soonButton)
 
 # Panel "Options"
-
-optionPaned = PanedWindow(main, bg=secondaryColorStr)
+optionPaned = PanedWindow(pyps, bg=secondaryColorStr)
 FgElements.append(optionPaned)
 
+    # Couleurs
 colorOptions = Canvas(optionPaned, bg=mainColorStr, highlightbackground=secondaryColorStr)
-colorOptions.place(relx=0.025, rely=0.05, relwidth=0.95, relheight=0.7)
+colorOptions.place(relx=0.025, rely=0.02, relwidth=0.95, relheight=0.7)
 BgElements.append(colorOptions)
 borderElements.append(colorOptions)
 
@@ -324,6 +371,26 @@ blueSecondaryColor.pack(fill=X)
 blueSecondaryColor.set(255)
 visualizeSecondaryColor.pack(fill=X)
 
+    # Sauvegarde
+saveOptions = Canvas(optionPaned, bg=mainColorStr, highlightbackground=secondaryColorStr)
+saveOptions.place(relx=0.025, rely=0.76, relwidth=0.95, relheight=0.22)
+BgElements.append(saveOptions)
+borderElements.append(saveOptions)
+
+titleSaveOptions = Label(saveOptions, text="Sauvegarde", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
+titleSaveOptions.place(relx=0.5, rely=0.2, anchor=CENTER)
+BgFgElements.append(titleSaveOptions)
+
+createSaveButton = Button(saveOptions, text="Créer une sauvegarde", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", command=saveConfig , font=mainFont)
+createSaveButton.place(relx=0.04, rely=0.43, relwidth=0.45, relheight=0.35)
+BgFgElements.append(createSaveButton)
+
+loadSaveButton = Button(saveOptions, text="Charger une sauvegarde", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", command=openConfig, font=mainFont)
+loadSaveButton.place(relx=0.51, rely=0.43, relwidth=0.45, relheight=0.35)
+BgFgElements.append(loadSaveButton)
+
+    
+
 # Panel de la simulation "Pendule"
 penduleSimulation = PanedWindow(main, bg=secondaryColorStr)
 FgElements.append(penduleSimulation)
@@ -347,30 +414,31 @@ infosPendule.place(relx=0.6, rely=0.9, relwidth=0.4, relheight=0.09)
 BgFgElements.append(infosPendule)
 
 	# Animation, partie majeure
-animationPendule = Canvas(penduleSimulation, bg=mainColorStr, highlightbackground=secondaryColorStr)
+animationPendule = Canvas(penduleSimulation, bg="white", highlightbackground=secondaryColorStr)
 animationPendule.place(relx=0.025, rely=0.05, relheight=0.8, relwidth=0.95)
-BgElements.append(animationPendule)
 borderElements.append(animationPendule)
 
 graphButton = Button(penduleSimulation, text="Lacher le pendule", bg=mainColorStr, fg=secondaryColorStr, cursor="hand2", command=lambda:penduleAnimation(g, t), font=mainFont)
 graphButton.place(relx=0.025, rely=0.92, relwidth=0.3, relheight=0.07)
 BgFgElements.append(graphButton)
 
-penduleFig = Figure(figsize=(4, 4), dpi=100)
+penduleFig = Figure(figsize=(8, 6), dpi=100)
 pendulePlot = penduleFig.add_subplot(111)
 
 ax = penduleFig.gca()
-ax.grid(True)
 ax.spines['left'].set_position('zero')
 ax.spines['bottom'].set_position('zero')
-pendulePlot.set_xlim([-pi, pi])
-pendulePlot.set_ylim([-pi, pi])
+pendulePlot.set_xlim([-3.5, 3.5])
+pendulePlot.set_ylim([-3.5, 3.5])
+pendulePlot.axis("off")
 
 (thetaMax, r, g, t) = (0, 1, 1, 10)
 theta = (thetaMax)*sin(-pi/2)
 
-pendulePlot.scatter([0, r*cos(theta-pi/2)], [0, r*sin(theta-pi/2)])
-pendulePlot.plot([0, r*cos(theta-pi/2)], [0, r*sin(theta-pi/2)])
+pendulePlot.scatter([0, -3.5, 3.5], [0, 0, 0], s=0)
+pendulePlot.plot([-3.5, 3.5], [0, 0], c="black")
+pendulePlot.plot([0, r*cos(theta-pi/2)], [0, r*sin(theta-pi/2)], c="red", zorder=1)
+pendulePlot.scatter(r*cos(theta-pi/2), r*sin(theta-pi/2), s=500, c="orange", zorder=2)
 
 animationCanvas = FigureCanvasTkAgg(penduleFig, master = animationPendule)
 animationCanvas.draw()
@@ -384,6 +452,11 @@ FgElements.append(penduleNSimulation)
 # Panel de la simulation "Boule"
 bouleSimulation = PanedWindow(main, bg=secondaryColorStr)
 FgElements.append(bouleSimulation)
+
+    # Masse, hauteur par rapport au sol, rayon, gravité
+    # - Chute de la boule avec accéleration
+    # - Deformation du sol lors du moment de l'impact (progressivement)
+    # - Affichage ondes +/- rouge avec zone de l'impact
 
 
 # Pied de page #
