@@ -8,9 +8,13 @@ import os
 from tkinter import *
 import tkinter.filedialog
 
+from turtle import *
+
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+import numpy as np
 
 from math import *
 
@@ -60,7 +64,7 @@ def changePaned(panedToDestroy, panedToPlace, buttonPanedName):
         tools.place_forget()
         panedToPlace.place_forget()
         panedToPlace.place(relx=0.01, rely=0.07, relwidth=0.98, relheight=0.86)
-        
+
 def simulationSettings(paned, enable):
     if(paned == penduleSimulation):
         if(enable == True):
@@ -70,7 +74,7 @@ def simulationSettings(paned, enable):
             angle2.pack(fill=X)
             angle3.pack(fill=X)
             angle4.pack(fill=X)
-            
+
         else:
             toolsButtons.place_forget()
             angle.pack_forget()
@@ -81,51 +85,178 @@ def simulationSettings(paned, enable):
 # Fonctions relatifs au "Pendule simple"
 def updatePenduleAnimation(thetaMaxUpdate, rUpdate, gUpdate, thetaUpdate):
 	pendulePlot.clear()
-	
+
 	ax.spines['left'].set_position('zero')
 	ax.spines['bottom'].set_position('zero')
 	pendulePlot.set_xlim([-3.5, 3.5])
 	pendulePlot.set_ylim([-3.5, 3.5])
-    pendulePlot.axis("off")
+	pendulePlot.axis("off")
 
-    pendulePlot.scatter([0, -3.5, 3.5], [0, 0, 0], s=0)
-    pendulePlot.plot([-3.5, 3.5], [0, 0], c="black")
+	pendulePlot.scatter([0, -3.5, 3.5], [0, 0, 0], s=0)
+	pendulePlot.plot([-3.5, 3.5], [0, 0], c="black")
 	pendulePlot.scatter(rUpdate*cos(thetaUpdate-pi/2), rUpdate*sin(thetaUpdate-pi/2), s=500, c="orange", zorder=2)
 	pendulePlot.plot([0, rUpdate*cos(thetaUpdate-pi/2)], [0, rUpdate*sin(thetaUpdate-pi/2)], c="red", zorder=1)
-	
-	animationCanvas.draw()
-	
+
+	animationPenduleCanvas.draw()
+
 def penduleAnimation(g, t):
 	periode = 2*pi*sqrt(r/g)
 	infosPendule['text'] = "Période : {} s\n Temps restant : 0h, 0m, 0s".format(round(periode, 1))
-	
+
 	h = 0.1
 	omega = sqrt(g/r)
-	
+
 	for i in range(0, int(t/h)):
 		thetaAnim = (thetaMax)*sin(omega*i*h + pi/2)
 		updatePenduleAnimation(thetaMax, r, g, thetaAnim)
 		plt.pause(h/2.6)
-	
+
 def changeR(newR):
 	global r
 	r = float(newR)
 	updatePenduleAnimation(thetaMax, r, g, theta)
-	
+
 def changeThetaMax(newThetaMax):
 	global thetaMax
 	global theta
 	thetaMax = (float(newThetaMax)*pi)/180
 	theta = (thetaMax)*sin(pi/2)
 	updatePenduleAnimation(thetaMax, r, g, theta)
-	
+
 def changeG(newG):
 	global g
 	g = float(newG)
-	
+
 def changeT(newT):
 	global t
 	t = float(newT)
+
+#Fonctions relatives à la boule
+    #parametrage des crayons 
+
+def startBouleSimulationFunc():
+	x, y = 500, 300
+	#Paramétrage des crayons
+	speed(0)
+	explosion1 = Turtle()
+	explosion2 = Turtle()
+	explosion3 = Turtle()
+	cratere = Turtle()
+	soufle = Turtle()
+	legende = Turtle()
+	explosion1.ht()
+	explosion2.ht()
+	explosion3.ht()
+	cratere.ht()
+	soufle.ht()
+	legende.ht()
+	explosion1.speed(0)
+	explosion2.speed(0)
+	explosion3.speed(0)
+	cratere.speed(0)
+	soufle.speed(0)
+	explosion1.pencolor("white")
+	explosion2.pencolor("white")
+	explosion3.pencolor("white")
+
+	#--------Paramètres-----------
+	h = float(input("Choisissez la hauteur en mètres \n"))
+	r = float(input("Choisissez le rayon de la boule en mètres \n"))
+	m = float(input("Choisissez la masse de la boule en kg \n"))
+	#--------Constantes----------
+	g = 9.8
+	#--------Paramétrage de l'échelle----------
+	echelle = h/(y-50)
+
+	#--------Calcul de valeurs numériques---------
+	tmax = sqrt(2*h/g)
+	Vmax = sqrt(2*g*h)
+	Emax = (1/2)*m*(Vmax**2)
+
+	p = m/(4*pi*r**3/3)
+	pt = 2.9*10**3
+	d = 2*r
+	#---------Calcul du diamètre du cratère--------
+	D = 1.161*(p/pt)**(1/3)*d**0.78*Vmax**0.44*g**-0.22
+
+	#---------Creation de tableaux pour réaliser des boucles d'animation-----
+	a = (D/2)/echelle
+	t = np.arange(0,tmax+0.04,0.04)
+	if D/(2*r) < 1:
+		R = np.linspace(0,a,10)
+	else:
+		 R = np.linspace(0,a,100)
+
+	#--------Légende------------
+	legende.up()
+	legende.setpos(-20,-92.5)
+	legende.down()
+	legende.forward(10)
+	legende.up()
+	legende.setpos(-10,-100)
+	legende.down()
+	legende.write("  :  {}m".format(10*echelle))
+	legende.up()
+	legende.setpos(-10,-110)
+	legende.down()
+	legende.write("Vitesse max = {}m/s".format(round(Vmax,2)))
+	legende.up()
+	legende.setpos(-10,-120)
+	legende.down()
+	legende.write("Energie mécanique = {}J".format(round(Emax,2)))
+	legende.up()
+	legende.setpos(-10,-130)
+	legende.down()
+	legende.write("Durée théorique de la chute = {}s".format(round(tmax,2)))
+	legende.up()
+	legende.setpos(-10,-140)
+	legende.down()
+	legende.write("Diamètre du cratère = {}m".format(round(D,2)))
+
+	#---------Création de la boule-------
+	if r/h <= 1/(y-50):
+		b = 1
+	elif r/h > 1/(y-50) and r/h < 1:
+		b = (r/h)*(y-50)
+	elif r/h >= 1:
+		b = y-50
+	begin_poly()
+	circle(b)
+	end_poly()
+	p = get_poly()
+	register_shape("boule", p)
+	shape("boule")
+	clear()
+	#--------Fonctions------------
+
+	up()
+	setpos(-x,0)
+	down()
+	setpos(x,0)
+	up()
+	setpos(0,y-50)
+	delay(30)
+	for i in t:
+		setpos(-b,(y-50)*((h-(1/2)*g*(i**2))/h)+b)
+	delay(1)
+	for i in R:
+		cratere.clear()
+		soufle.up()
+		cratere.up()
+		soufle.setpos(3*i,0)
+		soufle.setheading(90)
+		cratere.setpos(i,0)
+		cratere.setheading(90)
+		soufle.down()
+		cratere.down()
+		soufle.circle(3*i,180)
+		cratere.circle(i,-180)
+		explosion1.goto(i,0)
+		explosion2.goto(-i,0)
+		explosion3.goto(i,0)
+		explosion3.goto(-i,0)
+		setpos(-b,b-i)
+		soufle.clear()
 
 # Fonctions relatifs aux "Options"
     # Couleurs
@@ -165,64 +296,64 @@ def convertRGBtoHex(red, green, blue):
     blueHex = format(blue, "02x")
     hexColor = ("#" + redHex + greenHex + blueHex)
     return hexColor
-    
+
 def visualizeColor(colorPlace, red, green, blue):
     hexColor = convertRGBtoHex(red, green, blue)
     changeColorElements(colorPlace, hexColor)
 
 def changeRedMainColor(newRed):
     visualizeColor(1, int(newRed), greenMainColor.get(), blueMainColor.get())
-    
+
 def changeGreenMainColor(newGreen):
     visualizeColor(1, redMainColor.get(), int(newGreen), blueMainColor.get())
-    
+
 def changeBlueMainColor(newBlue):
     visualizeColor(1, redMainColor.get(), greenMainColor.get(), int(newBlue))
-    
+
 def changeRedSecondaryColor(newRed):
     visualizeColor(2, int(newRed), greenSecondaryColor.get(), blueSecondaryColor.get())
-    
+
 def changeGreenSecondaryColor(newGreen):
     visualizeColor(2, redSecondaryColor.get(), int(newGreen), blueSecondaryColor.get())
-    
+
 def changeBlueSecondaryColor(newBlue):
     visualizeColor(2, redSecondaryColor.get(), greenSecondaryColor.get(), int(newBlue))
-	
+
 	# Sauvegarde
 def saveConfig():
     saveConfig = tkinter.filedialog.asksaveasfilename(title="Enregistrer une sauvegarde", filetypes=[("Fichier texte", ".txt")],              initialfile="Sauvegarde_PyPS.txt", defaultextension=".txt", initialdir=saveConfigPath, parent=pyps)
     saveConfigFile = open(saveConfig, "w")
-    
+
     fileLines = [
-    "Fichier de sauvegarde | PyPS", 
-    "", 
-    "Pendule :", 
-    "Angle = {}".format(angle.get()), 
-    "Rayon = {}".format(angle2.get()), 
-    "Gravité = {}".format(angle3.get()), 
-    "Temps = {}".format(angle4.get()), 
-    "", 
-    "Boule :", 
-    "", 
-    "Options :", 
+    "Fichier de sauvegarde | PyPS",
+    "",
+    "Pendule :",
+    "Angle = {}".format(angle.get()),
+    "Rayon = {}".format(angle2.get()),
+    "Gravité = {}".format(angle3.get()),
+    "Temps = {}".format(angle4.get()),
+    "",
+    "Boule :",
+    "",
+    "Options :",
     ("Couleurs = " + str(redMainColor.get()) + str(greenMainColor.get()) + str(blueMainColor.get()), + str(redSecondaryColor.get()), str(greenSecondaryColor.get()) + str(blueSecondaryColor.get()))
     ]
-    
+
     for i in fileLines:
         saveConfigFile.write(i + " \n")
     saveConfigFile.close()
-    
+
 def openConfig():
     openConfig = tkinter.filedialog.askopenfilename(title="Charger une sauvegarde", filetypes=[("Fichier texte", ".txt")], multiple=False,  initialfile="Sauvegarde_PyPS.txt", defaultextension=".txt", initialdir=saveConfigPath, parent=pyps)
     openConfigFile = open(openConfig, "r")
-    
+
     linesSaveFile = openConfigFile.readlines()
     print(linesSaveFile)
-    
+
     openConfigFile.close()
-    
-    
-	
+
+
+
 
 mainFont = "Roboto 12 bold"
 
@@ -389,7 +520,7 @@ loadSaveButton = Button(saveOptions, text="Charger une sauvegarde", bg=mainColor
 loadSaveButton.place(relx=0.51, rely=0.43, relwidth=0.45, relheight=0.35)
 BgFgElements.append(loadSaveButton)
 
-    
+
 
 # Panel de la simulation "Pendule"
 penduleSimulation = PanedWindow(main, bg=secondaryColorStr)
@@ -453,10 +584,14 @@ FgElements.append(penduleNSimulation)
 bouleSimulation = PanedWindow(main, bg=secondaryColorStr)
 FgElements.append(bouleSimulation)
 
-    # Masse, hauteur par rapport au sol, rayon, gravité
-    # - Chute de la boule avec accéleration
-    # - Deformation du sol lors du moment de l'impact (progressivement)
-    # - Affichage ondes +/- rouge avec zone de l'impact
+animationBoule = Canvas(bouleSimulation, bg=mainColorStr, highlightbackground=secondaryColorStr)
+animationBoule.place(relx=0.025, rely=0.05, relheight=0.8, relwidth=0.95)
+FgElements.append(animationBoule)
+borderElements.append(animationBoule)
+
+startBouleSimulation = Button(animationBoule, bg=mainColorStr, highlightbackground=secondaryColorStr, text="Lancer", command=startBouleSimulationFunc)
+startBouleSimulation.place(relx=0, rely=0)
+
 
 
 # Pied de page #
@@ -471,7 +606,6 @@ BgFgElements.append(footerCredits)
 
 
 # Logo #
-
 
 
 
