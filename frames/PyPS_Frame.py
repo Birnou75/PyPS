@@ -69,18 +69,36 @@ def simulationSettings(paned, enable):
     if(paned == penduleSimulation):
         if(enable == True):
             toolsButtons.place(rely=0.12, relx=0.087, relwidth=0.82, relheight=0.8)
-
-            angle.pack(fill=X)
-            angle2.pack(fill=X)
-            angle3.pack(fill=X)
-            angle4.pack(fill=X)
+            anglePendule.pack(fill=X)
+            threadPendule.pack(fill=X)
+            gravityPendule.pack(fill=X)
+            timePendule.pack(fill=X)
 
         else:
             toolsButtons.place_forget()
-            angle.pack_forget()
-            angle2.pack_forget()
-            angle3.pack_forget()
-            angle4.pack_forget()
+            anglePendule.pack_forget()
+            threadPendule.pack_forget()
+            gravityPendule.pack_forget()
+            timePendule.pack_forget()
+    if(paned == bouleSimulation):
+        if(enable == True):
+            toolsButtons.place(rely=0.12, relx=0.087, relwidth=0.82, relheight=0.8)
+            hauteurBouleLabel.pack(pady=10)
+            hauteurBoule.pack(fill=X)
+            rayonBouleLabel.pack(pady=10)
+            rayonBoule.pack(fill=X)
+            masseBouleLabel.pack(pady=10)
+            masseBoule.pack(fill=X)
+            startBouleSimulation.place(relx=0.07, rely=0.75, relwidth=0.86, relheight=0.2)
+        else:
+            toolsButtons.place_forget()
+            hauteurBoule.pack_forget()
+            hauteurBouleLabel.pack_forget()
+            rayonBoule.pack_forget()
+            rayonBouleLabel.pack_forget()
+            masseBoule.pack_forget()
+            masseBouleLabel.pack_forget()
+            startBouleSimulation.place_forget()
 
 # Fonctions relatifs au "Pendule simple"
 def updatePenduleAnimation(thetaMaxUpdate, rUpdate, gUpdate, thetaUpdate):
@@ -132,10 +150,9 @@ def changeT(newT):
 	t = float(newT)
 
 #Fonctions relatives à la boule
-    #parametrage des crayons 
-
+    #parametrage des crayons
 def startBouleSimulationFunc():
-	x, y = 500, 300
+	x, y = screensize()
 	#Paramétrage des crayons
 	speed(0)
 	explosion1 = Turtle()
@@ -258,6 +275,7 @@ def startBouleSimulationFunc():
 		setpos(-b,b-i)
 		soufle.clear()
 
+
 # Fonctions relatifs aux "Options"
     # Couleurs
 mainColorStr = "#232369"
@@ -289,6 +307,7 @@ def changeColorElements(colorPlace, color):
             i['bg'] = secondaryColorStr
         for i in borderElements:
             i['highlightbackground'] = secondaryColorStr
+            i['highlightcolor'] = secondaryColorStr
 
 def convertRGBtoHex(red, green, blue):
     redHex = format(red, "02x")
@@ -328,15 +347,15 @@ def saveConfig():
     "Fichier de sauvegarde | PyPS",
     "",
     "Pendule :",
-    "Angle = {}".format(angle.get()),
-    "Rayon = {}".format(angle2.get()),
-    "Gravité = {}".format(angle3.get()),
-    "Temps = {}".format(angle4.get()),
+    "anglePendule = {}".format(anglePendule.get()),
+    "Rayon = {}".format(threadPendule.get()),
+    "Gravité = {}".format(gravityPendule.get()),
+    "Temps = {}".format(timePendule.get()),
     "",
     "Boule :",
     "",
     "Options :",
-    ("Couleurs = " + str(redMainColor.get()) + str(greenMainColor.get()) + str(blueMainColor.get()), + str(redSecondaryColor.get()), str(greenSecondaryColor.get()) + str(blueSecondaryColor.get()))
+    ("Couleurs = " + str(redMainColor.get()) + " " + str(greenMainColor.get()) + " " + str(blueMainColor.get()) + " " + str(redSecondaryColor.get()) + " " + str(greenSecondaryColor.get()) + " " + str(blueSecondaryColor.get()))
     ]
 
     for i in fileLines:
@@ -383,7 +402,7 @@ homeButton = Button(header, text="Accueil", bg=mainColorStr, fg=secondaryColorSt
 BgFgElements.append(homeButton)
 
 # Menu #
-menu = Frame(pyps, bg=secondaryColorStr, highlightbackground=secondaryColorStr, highlightthickness=2)
+menu = Frame(pyps, bg=secondaryColorStr, highlightbackground=secondaryColorStr, highlightthickness=0)
 menu.place(relx=0, rely=0.05, relwidth=0.3, relheight=0.9)
 FgElements.append(menu)
 borderElements.append(menu)
@@ -520,25 +539,24 @@ loadSaveButton = Button(saveOptions, text="Charger une sauvegarde", bg=mainColor
 loadSaveButton.place(relx=0.51, rely=0.43, relwidth=0.45, relheight=0.35)
 BgFgElements.append(loadSaveButton)
 
-
+# Paramètres options
+toolsButtons = Canvas(tools, bg=mainColorStr, highlightbackground=secondaryColorStr)
+FgElements.append(toolsButtons)
+borderElements.append(toolsButtons)
 
 # Panel de la simulation "Pendule"
 penduleSimulation = PanedWindow(main, bg=secondaryColorStr)
 FgElements.append(penduleSimulation)
 
-toolsButtons = Canvas(tools, bg=mainColorStr, highlightbackground=secondaryColorStr)
-FgElements.append(toolsButtons)
-borderElements.append(toolsButtons)
+anglePendule = Scale(toolsButtons, orient="horizontal", from_=0, to=180, resolution=1, tickinterval=90, label='anglePendule (deg)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeThetaMax, font=mainFont)
+threadPendule = Scale(toolsButtons, orient="horizontal", from_=1, to=3, resolution=0.01, tickinterval=1, label='Longueur du fil (mètres)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeR, font=mainFont)
+gravityPendule = Scale(toolsButtons, orient="horizontal", from_=1, to=10, resolution=1, tickinterval=2, label='Gravité (lieu)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeG, font=mainFont)
+timePendule = Scale(toolsButtons, orient="horizontal", from_=10, to=100, resolution=1, tickinterval=30, label='Temps de la simulation (sec)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeT, font=mainFont)
 
-angle = Scale(toolsButtons, orient="horizontal", from_=0, to=180, resolution=1, tickinterval=90, label='Angle (deg)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeThetaMax, font=mainFont)
-angle2 = Scale(toolsButtons, orient="horizontal", from_=1, to=3, resolution=0.01, tickinterval=1, label='Longueur du fil (mètres)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeR, font=mainFont)
-angle3 = Scale(toolsButtons, orient="horizontal", from_=1, to=10, resolution=1, tickinterval=2, label='Gravité (lieu)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeG, font=mainFont)
-angle4 = Scale(toolsButtons, orient="horizontal", from_=10, to=100, resolution=1, tickinterval=30, label='Temps de la simulation (sec)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeT, font=mainFont)
-
-scrollElements.append(angle)
-scrollElements.append(angle2)
-scrollElements.append(angle3)
-scrollElements.append(angle4)
+scrollElements.append(anglePendule)
+scrollElements.append(threadPendule)
+scrollElements.append(gravityPendule)
+scrollElements.append(timePendule)
 
 infosPendule = Label(penduleSimulation, text="Période : 0 s", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 infosPendule.place(relx=0.6, rely=0.9, relwidth=0.4, relheight=0.09)
@@ -571,9 +589,9 @@ pendulePlot.plot([-3.5, 3.5], [0, 0], c="black")
 pendulePlot.plot([0, r*cos(theta-pi/2)], [0, r*sin(theta-pi/2)], c="red", zorder=1)
 pendulePlot.scatter(r*cos(theta-pi/2), r*sin(theta-pi/2), s=500, c="orange", zorder=2)
 
-animationCanvas = FigureCanvasTkAgg(penduleFig, master = animationPendule)
-animationCanvas.draw()
-animationCanvas.get_tk_widget().place(relx=0.5, rely=0.5, anchor=CENTER)
+animationPenduleCanvas = FigureCanvasTkAgg(penduleFig, master = animationPendule)
+animationPenduleCanvas.draw()
+animationPenduleCanvas.get_tk_widget().place(relx=0.5, rely=0.5, anchor=CENTER)
 
 
 # Panel de la simulation "Pendule de Newton"
@@ -584,13 +602,31 @@ FgElements.append(penduleNSimulation)
 bouleSimulation = PanedWindow(main, bg=secondaryColorStr)
 FgElements.append(bouleSimulation)
 
-animationBoule = Canvas(bouleSimulation, bg=mainColorStr, highlightbackground=secondaryColorStr)
-animationBoule.place(relx=0.025, rely=0.05, relheight=0.8, relwidth=0.95)
-FgElements.append(animationBoule)
-borderElements.append(animationBoule)
+animationBouleCanvas = Canvas(bouleSimulation, bg=mainColorStr, highlightbackground=secondaryColorStr)
+animationBouleCanvas.place(relx=0.025, rely=0.05, relheight=0.8, relwidth=0.95)
+FgElements.append(animationBouleCanvas)
+borderElements.append(animationBouleCanvas)
 
-startBouleSimulation = Button(animationBoule, bg=mainColorStr, highlightbackground=secondaryColorStr, text="Lancer", command=startBouleSimulationFunc)
-startBouleSimulation.place(relx=0, rely=0)
+hauteurBouleLabel = Label(toolsButtons, text="Hauteur de la boule", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
+hauteurBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
+rayonBouleLabel = Label(toolsButtons, text="Rayon de la boule", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
+rayonBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
+masseBouleLabel = Label(toolsButtons, text="Hauteur de la boule", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
+masseBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
+
+BgFgElements.append(hauteurBoule)
+BgFgElements.append(hauteurBouleLabel)
+BgFgElements.append(rayonBoule)
+BgFgElements.append(rayonBouleLabel)
+BgFgElements.append(masseBoule)
+BgFgElements.append(masseBouleLabel)
+
+hauteurBoule.insert(0, 100)
+rayonBoule.insert(0, 20)
+masseBoule.insert(0, 100000)
+
+startBouleSimulation = Button(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, text="Faire chuter la boule", command=startBouleSimulationFunc, cursor="hand2", font=mainFont)
+BgFgElements.append(startBouleSimulation)
 
 
 
