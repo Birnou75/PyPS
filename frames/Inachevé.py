@@ -19,7 +19,7 @@ import numpy as np
 from math import *
 
 pyps = Tk()
-pyps.minsize(width=900, height=625)
+pyps.minsize(width=700, height=625)
 
 
 # --------------------------------------------------------------------
@@ -28,7 +28,7 @@ pyps.minsize(width=900, height=625)
 saveConfigPath="Desktop/NSI/PyPS/saves/"
 
 
-#------------ Listes d'élements en fonction de leurs attributs
+# Listes d'élements en fonction de leurs attributs
 BgFgElements = []
 FgBgElements = []
 BgElements = []
@@ -37,74 +37,52 @@ scrollElements = []
 borderElements = []
 
 
-#------------Fonctions générales
-#   Fonction de changement de fenêtre
+# Fonctions générales
 def changePaned(panedToDestroy, panedToPlace, buttonPanedName):
-    panedToDestroy.place_forget() #Supprime la fenêtre actuelle
-    panedToPlace.place(relx=0.01, rely=0.01, relwidth=0.98, relheight=0.98) # Initialise les dimensions de la fenêtre à ouvrir
+    panedToDestroy.place_forget()
+    panedToPlace.place(relx=0.01, rely=0.01, relwidth=0.98, relheight=0.98)
     headerTitle['text'] = buttonPanedName['text']
 
     if(panedToPlace != home):
-# Si on sort du menu principal :
         homeButton['command']=lambda:[changePaned(panedToPlace, panedToDestroy, homeButton)]
-        homeButton.place(relx=0.017, rely=0.1, relheight=0.8, relwidth=0.1) #Place un bouton "Accueil" pour retourner au menu
+        homeButton.place(relx=0.017, rely=0.1, relheight=0.8, relwidth=0.1)
         chooseTools.place(relx=0.5, rely=0.05, anchor=CENTER)
-        chooseTools.config(text="Paramètres") #Place une fenêtre paramètre qui servira à paramétrer les simulations
-        options.place_forget() #Supprime le bouton "options"
-        creditsMenu.place_forget() #Supprime le bouton "crédits"
+        chooseTools.config(text="Paramètres")
+        options.place_forget()
+        creditsMenu.place_forget()
         tools.place(relx=0.05, rely=0.05, relwidth=0.90, relheight=0.9)
         simulationSettings(panedToPlace, True)
     else:
-# Si on revient dans le menu principal :
         simulationSettings(panedToDestroy, False)
         chooseTools.place(relx=0.5, rely=0.5, anchor=CENTER)
-        chooseTools.config(text="Choisissez une simulation") #Fais appararaître la fenêtre indicative "Choisissez une simulation"
-        homeButton.place_forget() # Fais disparaître le bouton "Accueil"
+        chooseTools.config(text="Choisissez une simulation")
+        homeButton.place_forget()
         tools.place(relx=0.05, rely=0.05, relwidth=0.90, relheight=0.65)
-        options.place(relx=0.05, rely=0.74, relwidth=0.90, relheight=0.10) #Place le bouton "options"
-        creditsMenu.place(relx=0.05, rely=0.87, relwidth=0.90, relheight=0.10) #Place le bouton "crédits"
+        options.place(relx=0.05, rely=0.74, relwidth=0.90, relheight=0.10)
+        creditsMenu.place(relx=0.05, rely=0.87, relwidth=0.90, relheight=0.10)
     if(panedToPlace == optionPaned):
-#Si on accède aux options :
-        tools.place_forget() #Supprime la fenêtre "paramètres"
+        tools.place_forget()
         panedToPlace.place_forget()
         panedToPlace.place(relx=0.01, rely=0.07, relwidth=0.98, relheight=0.86)
 
 def simulationSettings(paned, enable):
-#Initialise la fenêtre paramètre de chaque simulation
     if(paned == penduleSimulation):
         if(enable == True):
             toolsButtons.place(rely=0.12, relx=0.087, relwidth=0.82, relheight=0.8)
-            anglePendule.pack(fill=X)
-            threadPendule.pack(fill=X)
-            gravityPendule.pack(fill=X)
-            timePendule.pack(fill=X)
-        else:
-            toolsButtons.place_forget()
-            anglePendule.pack_forget()
-            threadPendule.pack_forget()
-            gravityPendule.pack_forget()
-            timePendule.pack_forget()
-    if(paned == bouleSimulation):
-        if(enable == True):
-            toolsButtons.place(rely=0.12, relx=0.087, relwidth=0.82, relheight=0.8)
-            hauteurBouleLabel.pack(pady=7)
-            hauteurBoule.pack(fill=X)
-            rayonBouleLabel.pack(pady=7)
-            rayonBoule.pack(fill=X)
-            masseBouleLabel.pack(pady=7)
-            masseBoule.pack(fill=X)
-            startBouleSimulation.place(relx=0.07, rely=0.75, relwidth=0.86, relheight=0.2)
-        else:
-            toolsButtons.place_forget()
-            hauteurBoule.pack_forget()
-            hauteurBouleLabel.pack_forget()
-            rayonBoule.pack_forget()
-            rayonBouleLabel.pack_forget()
-            masseBoule.pack_forget()
-            masseBouleLabel.pack_forget()
-            startBouleSimulation.place_forget()
 
-#------------Fonctions relatifs au "Pendule simple"
+            angle.pack(fill=X)
+            angle2.pack(fill=X)
+            angle3.pack(fill=X)
+            angle4.pack(fill=X)
+
+        else:
+            toolsButtons.place_forget()
+            angle.pack_forget()
+            angle2.pack_forget()
+            angle3.pack_forget()
+            angle4.pack_forget()
+
+# Fonctions relatifs au "Pendule simple"
 def updatePenduleAnimation(thetaMaxUpdate, rUpdate, gUpdate, thetaUpdate):
 	pendulePlot.clear()
 
@@ -153,148 +131,159 @@ def changeT(newT):
 	global t
 	t = float(newT)
 
-#------------Fonctions relatives à la boule
+#Fonctions relatives à la boule
+    #parametrage des crayons
 
 def startBouleSimulationFunc():
-    screenBoule = TurtleScreen(animationBouleCanvas)
-	(x, y) = (screenBoule.window_width(), screenBoule.window_height())
-	(decalageX, decalageY) = (100, -200)
-	screenBoule.screensize(x, y)
-	#Parametrage des crayons
-	explosion1 = RawTurtle(screenBoule)
-	explosion2 = RawTurtle(screenBoule)
-	explosion3 = RawTurtle(screenBoule)
-	cratere = RawTurtle(screenBoule)
-	soufle = RawTurtle(screenBoule)
-	# legende = RawTurtle(screenBoule)
-	bouleTurtle = RawTurtle(screenBoule)
-	explosion1.ht()
-	explosion2.ht()
-	explosion3.ht()
-	cratere.ht()
-	soufle.ht()
-	# legende.ht()
-	bouleTurtle.speed(0)
-	explosion1.speed(0)
-	explosion2.speed(0)
-	explosion3.speed(0)
-	cratere.speed(0)
-	soufle.speed(0)
-	explosion1.pencolor("white")
-	explosion2.pencolor("white")
-	explosion3.pencolor("white")
-	soufle.pencolor("blue")
+	# legende()
+    chute()
 
-	#-------- Initialisation des Paramètres-----------
-	h = float(hauteurBoule.get())
-	r = float(rayonBoule.get())
-	m = float(masseBoule.get())*1000
-	#--------Constantes----------
-	g = 9.8
-	#--------Paramétrage de l'échelle----------
-	echelle = h/(y-50) # Avancer de 1 sur l'écran correspond à un déplacement de h/(y-50) mètres dans la réalité
+def test():
+    testeur = TurtleScreen(animationBoule)
+    stylotest = RawTurtle(testeur)
+    stylotest.goto(-586,0)
+    stylotest.goto(586,0)
+    stylotest1 = RawTurtle(testeur)
+    stylotest1.goto(-600,-10)
+    stylotest1.goto(800,-10)
 
-	#--------Calcul de valeurs numériques---------
-	tmax = sqrt(2*h/g) #Durée théorique de la chute
-	Vmax = sqrt(2*g*h) #Vitesse max
-	Emax = (1/2)*m*(Vmax**2) #Energie mécanique, Energie au moment de l'impact
+def chute():
+    panelBoule = TurtleScreen(animationBoule)
+    panelBoule.bgcolor("blue")
 
-	p = m/(4*pi*r**3/3)
-	pt = 2.9*10**3
-	d = 2*r
+    global r
+    global h
 
-	#---------Calcul du diamètre du cratère--------
-	D = 1.161*(p/pt)**(1/3)*d**0.78*Vmax**0.44*g**-0.22
+    print(panelBoule.window_width())
+    x,y = panelBoule.window_width(), panelBoule.window_height()
 
-	#---------Creation de tableaux pour réaliser des boucles d'animation-----
-	a = (D/2)/echelle
-	t = np.arange(0,tmax+0.04,0.04)
-	if D/(2*r) < 1:
-		R = np.linspace(0,a,10)
-	else:
-		 R = np.linspace(0,a,100 )
-#Le tableau sera parcouru dans une boucle pour dessiner une animation
+    boule = RawTurtle(panelBoule)
+    explosion1 = RawTurtle(panelBoule)
+    explosion2 = RawTurtle(panelBoule)
+    explosion3 = RawTurtle(panelBoule)
+    cratere = RawTurtle(panelBoule)
+    soufle = RawTurtle(panelBoule)
+    explosion1.ht()
+    explosion2.ht()
+    explosion3.ht()
+    cratere.ht()
+    soufle.ht()
+    explosion1.speed(0)
+    explosion2.speed(0)
+    explosion3.speed(0)
+    cratere.speed(0)
+    soufle.speed(0)
+    explosion1.pencolor("white")
+    explosion2.pencolor("white")
+    explosion3.pencolor("white")
 
-	#--------Légende------------
-# Dessine les informations de la boule en bas de l'écran
-	# legende.up()
-	# legende.setpos(x,-y+65+300)
-	# legende.down()
-	# legende.forward(10)
-	# legende.up()
-	# legende.setpos(15+300,-y+60+300)
-	# legende.down()
-	# legende.write("  :  {}m".format(10*echelle))
-	# legende.up()
-	# legende.setpos(-x+80+300,-y+20+300)
-	# legende.down()
-	# legende.write("Vitesse max = {}m/s".format(round(Vmax,2)))
-	# legende.up()
-	# legende.setpos(-x+250+300,-y+20+300)
-	# legende.down()
-	# legende.write("Energie mécanique = {}J".format(round(Emax,2)))
-	# legende.up()
-	# legende.setpos(-x+450+300,-y+20+300)
-	# legende.down()
-	# legende.write("Durée théorique de la chute = {}s".format(round(tmax,2)))
-	# legende.up()
-	# legende.setpos(0+300,-y+40+300)
-	# legende.down()
-	# legende.write("Diamètre du cratère = {}m".format(round(D,2)))
+    if r/h <= 1/(y-50):
+        b = 1
+    elif r/h > 1/(y-50) and r/h < 1:
+        b = (r/h)*(y-50)
+    elif r/h >= 1:
+        b = y-50
 
-	#---------Création de la boule-------
-	if r/h <= 1/(y-50+decalageY):
-		b = 1
-	elif r/h > 1/(y-50+decalageY) and r/h < 1:
-		b = (r/h)*(y-50+decalageY)
-	elif r/h >= 1:
-		b = y-50+decalageY
-	bouleTurtle.begin_poly()
-	bouleTurtle.circle(b)
-	bouleTurtle.end_poly()
-	p = bouleTurtle.get_poly()
-	screenBoule.register_shape("boule", p)
-	bouleTurtle.shape("boule")
-	# bouleTurtle.shape("boule")
-	bouleTurtle.clear()
-#Création du décor
-    bouleTurtle.speed(0)
-	bouleTurtle.up()
-	bouleTurtle.setpos(-x, decalageY)
-	bouleTurtle.down()
-	bouleTurtle.setpos(x, decalageY)
-	bouleTurtle.up()
+    boule.begin_poly()
+    boule.circle(b)
+    boule.end_poly()
+    poly = boule.get_poly()
+    panelBoule.register_shape("boule",poly)
+    boule.shape("boule")
+    boule.clear()
+    boule.up()
+    boule.setpos(-x/2,0)
+    boule.down()
+    boule.setpos(x/2,0)
+    boule.up()
+    boule.setpos(0,y-50)
+    panelBoule.delay(30)
+    for i in t1:
+        boule.setpos(-b,(y-50)*((h-(1/2)*g*(i**2))/h)+b)
+    panelBoule.delay(1)
+    for i in R:
+        cratere.clear()
+        soufle.up()
+        cratere.up()
+        soufle.setpos(3*i,0)
+        soufle.setheading(90)
+        cratere.setpos(i,0)
+        cratere.setheading(90)
+        soufle.down()
+        cratere.down()
+        soufle.circle(3*i,180)
+        cratere.circle(i,-180)
+        explosion1.goto(i,0)
+        explosion2.goto(-i,0)
+        explosion3.goto(i,0)
+        explosion3.goto(-i,0)
+        boule.setpos(-b,b-i)
+        soufle.clear()
 
-#Chute de la boule
-	bouleTurtle.setpos(0+decalageX, 0)
-	delay(30)
-	for i in t:
-		bouleTurtle.setpos(-b+decalageX, (y-50+decalageY)*((h-(1/2)*g*(i**2))/h)+b)
-	delay(1)
-	for i in R:
-		cratere.clear()
-		soufle.up()
-		cratere.up()
-		soufle.setpos(10*i+decalageX,0+decalageY)
-		soufle.setheading(90)
-		cratere.setpos(i+decalageX,0+decalageY)
-		cratere.setheading(90)
-		soufle.down()
-		cratere.down()
-		soufle.circle(3*i, 180)
-		cratere.circle(i,-180)
-		explosion1.goto(i+decalageX,0+decalageY)
-		explosion2.goto(-i+decalageX,0+decalageY)
-		explosion3.goto(i+decalageX,0+decalageY)
-		explosion3.goto(-i+decalageX,0+decalageY)
-		bouleTurtle.setpos(-b+decalageX,b-i+decalageY)
-		soufle.clear()
+def legende():
+    l = RawTurtle(InfosBoule)
+    x,y = 0,0
+    l.up()
+    l.setpos(x-5,y-5 )
+    l.down()
+    l.forward(10)
+    l.up()
+    l.setpos(-x+15,y-2.5)
+    l.down()
+    l.write("  :  {}m".format(10*echelle))
+    l.up()
+    l.setpos(-x+15,y-10)
+    l.down()
+    l.write("Vitesse max = {}m/s".format(round(Vmax,2)))
+    l.up()
+    l.setpos(-x+15,y-20)
+    l.down()
+    l.write("Energie mécanique = {}J".format(round(Emax,2)))
+    l.up()
+    l.setpos(-x+10,y-30)
+    l.down()
+    l.write("Durée théorique de la chute = {}s".format(round(tmax,2)))
+    l.up()
+    l.setpos(-x+10,y-40)
+    l.down()
+    l.write("Diamètre du cratère = {}m".format(round(D,2)))
+
+
+#---------Création de la boule-------
+
+#--------Constantes----------
+y = 300
+h = 100
+r = 100
+m = 100000000
+g = 9.8
+#--------parametrage de l'échelle----------
+echelle = h/(y-50)
+
+#--------Calcul de valeurs numériques---------
+tmax = sqrt(2*h/g)
+Vmax = sqrt(2*g*h)
+Emax = (1/2)*m*(Vmax**2)
+
+p = m/(4*pi*r**3/3)
+pt = 2.9*10**3
+d = 2*r
+#---------Calcul du diamètre du cratère--------
+D = 1.161*(p/pt)**(1/3)*d**0.78*Vmax**0.44*g**-0.22
+
+#---------Creation de tableaux pour réaliser des boucles d'animation-----
+a = (D/2)/echelle
+t1 = np.arange(0,tmax+0.04,0.04)
+if D/(2*r) < 1:
+    R = np.linspace(0,a,10)
+else:
+     R = np.linspace(0,a,100)
 
 
 # Fonctions relatifs aux "Options"
     # Couleurs
 mainColorStr = "#232369"
-secondaryColorStr = "white"
+secondaryColorStr = "#ffffff"
 
 def changeColorElements(colorPlace, color):
     if(colorPlace == 1):
@@ -322,7 +311,6 @@ def changeColorElements(colorPlace, color):
             i['bg'] = secondaryColorStr
         for i in borderElements:
             i['highlightbackground'] = secondaryColorStr
-            i['highlightcolor'] = secondaryColorStr
 
 def convertRGBtoHex(red, green, blue):
     redHex = format(red, "02x")
@@ -355,22 +343,22 @@ def changeBlueSecondaryColor(newBlue):
 
 	# Sauvegarde
 def saveConfig():
-    saveConfig = tkinter.filedialog.asksaveasfilename(title="Enregistrer une sauvegarde", filetypes=[("Fichier texte", ".txt")], initialfile="Sauvegarde_PyPS.txt", defaultextension=".txt", initialdir=saveConfigPath, parent=pyps)
+    saveConfig = tkinter.filedialog.asksaveasfilename(title="Enregistrer une sauvegarde", filetypes=[("Fichier texte", ".txt")],              initialfile="Sauvegarde_PyPS.txt", defaultextension=".txt", initialdir=saveConfigPath, parent=pyps)
     saveConfigFile = open(saveConfig, "w")
 
     fileLines = [
     "Fichier de sauvegarde | PyPS",
     "",
     "Pendule :",
-    "anglePendule = {}".format(anglePendule.get()),
-    "Rayon = {}".format(threadPendule.get()),
-    "Gravité = {}".format(gravityPendule.get()),
-    "Temps = {}".format(timePendule.get()),
+    "Angle = {}".format(angle.get()),
+    "Rayon = {}".format(angle2.get()),
+    "Gravité = {}".format(angle3.get()),
+    "Temps = {}".format(angle4.get()),
     "",
     "Boule :",
     "",
     "Options :",
-    ("Couleurs = " + str(redMainColor.get()) + " " + str(greenMainColor.get()) + " " + str(blueMainColor.get()) + " " + str(redSecondaryColor.get()) + " " + str(greenSecondaryColor.get()) + " " + str(blueSecondaryColor.get()))
+    ("Couleurs = " + str(redMainColor.get()) + str(greenMainColor.get()) + str(blueMainColor.get()), + str(redSecondaryColor.get()), str(greenSecondaryColor.get()) + str(blueSecondaryColor.get()))
     ]
 
     for i in fileLines:
@@ -402,6 +390,7 @@ pyps.title("PyPS | Python Physics Simulator")
 pyps.geometry("900x600")
 # pyps.iconbitmap("pyps_logo.ico")
 
+
 # En-tête #
 header = Frame(pyps, bg=mainColorStr, highlightbackground=secondaryColorStr)
 header.place(relx=0, rely=0, relwidth=1, relheight=0.05)
@@ -416,7 +405,7 @@ homeButton = Button(header, text="Accueil", bg=mainColorStr, fg=secondaryColorSt
 BgFgElements.append(homeButton)
 
 # Menu #
-menu = Frame(pyps, bg=secondaryColorStr, highlightbackground=secondaryColorStr, highlightthickness=0)
+menu = Frame(pyps, bg=secondaryColorStr, highlightbackground=secondaryColorStr, highlightthickness=2)
 menu.place(relx=0, rely=0.05, relwidth=0.3, relheight=0.9)
 FgElements.append(menu)
 borderElements.append(menu)
@@ -553,24 +542,25 @@ loadSaveButton = Button(saveOptions, text="Charger une sauvegarde", bg=mainColor
 loadSaveButton.place(relx=0.51, rely=0.43, relwidth=0.45, relheight=0.35)
 BgFgElements.append(loadSaveButton)
 
-# Paramètres options
-toolsButtons = Canvas(tools, bg=secondaryColorStr, highlightthickness=0)
-FgElements.append(toolsButtons)
-borderElements.append(toolsButtons)
+
 
 # Panel de la simulation "Pendule"
 penduleSimulation = PanedWindow(main, bg=secondaryColorStr)
 FgElements.append(penduleSimulation)
 
-anglePendule = Scale(toolsButtons, orient="horizontal", from_=0, to=180, resolution=1, tickinterval=90, label='Angle (deg)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeThetaMax, font=mainFont)
-threadPendule = Scale(toolsButtons, orient="horizontal", from_=1, to=3, resolution=0.01, tickinterval=1, label='Longueur du fil (mètres)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeR, font=mainFont)
-gravityPendule = Scale(toolsButtons, orient="horizontal", from_=1, to=10, resolution=1, tickinterval=2, label='Gravité (lieu)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeG, font=mainFont)
-timePendule = Scale(toolsButtons, orient="horizontal", from_=10, to=100, resolution=1, tickinterval=30, label='Temps de la simulation (sec)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeT, font=mainFont)
+toolsButtons = Canvas(tools, bg=mainColorStr, highlightbackground=secondaryColorStr)
+FgElements.append(toolsButtons)
+borderElements.append(toolsButtons)
 
-scrollElements.append(anglePendule)
-scrollElements.append(threadPendule)
-scrollElements.append(gravityPendule)
-scrollElements.append(timePendule)
+angle = Scale(toolsButtons, orient="horizontal", from_=0, to=180, resolution=1, tickinterval=90, label='Angle (deg)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeThetaMax, font=mainFont)
+angle2 = Scale(toolsButtons, orient="horizontal", from_=1, to=3, resolution=0.01, tickinterval=1, label='Longueur du fil (mètres)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeR, font=mainFont)
+angle3 = Scale(toolsButtons, orient="horizontal", from_=1, to=10, resolution=1, tickinterval=2, label='Gravité (lieu)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeG, font=mainFont)
+angle4 = Scale(toolsButtons, orient="horizontal", from_=10, to=100, resolution=1, tickinterval=30, label='Temps de la simulation (sec)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeT, font=mainFont)
+
+scrollElements.append(angle)
+scrollElements.append(angle2)
+scrollElements.append(angle3)
+scrollElements.append(angle4)
 
 infosPendule = Label(penduleSimulation, text="Période : 0 s", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
 infosPendule.place(relx=0.6, rely=0.9, relwidth=0.4, relheight=0.09)
@@ -603,9 +593,9 @@ pendulePlot.plot([-3.5, 3.5], [0, 0], c="black")
 pendulePlot.plot([0, r*cos(theta-pi/2)], [0, r*sin(theta-pi/2)], c="red", zorder=1)
 pendulePlot.scatter(r*cos(theta-pi/2), r*sin(theta-pi/2), s=500, c="orange", zorder=2)
 
-animationPenduleCanvas = FigureCanvasTkAgg(penduleFig, master = animationPendule)
-animationPenduleCanvas.draw()
-animationPenduleCanvas.get_tk_widget().place(relx=0.5, rely=0.5, anchor=CENTER)
+animationCanvas = FigureCanvasTkAgg(penduleFig, master = animationPendule)
+animationCanvas.draw()
+animationCanvas.get_tk_widget().place(relx=0.5, rely=0.5, anchor=CENTER)
 
 
 # Panel de la simulation "Pendule de Newton"
@@ -616,31 +606,17 @@ FgElements.append(penduleNSimulation)
 bouleSimulation = PanedWindow(main, bg=secondaryColorStr)
 FgElements.append(bouleSimulation)
 
-animationBouleCanvas = Canvas(bouleSimulation, bg="red", highlightbackground=secondaryColorStr)
-animationBouleCanvas.place(relx=0.025, rely=0.05, relheight=0.8, relwidth=0.95)
-FgElements.append(animationBouleCanvas)
-borderElements.append(animationBouleCanvas)
+animationBoule = Canvas(bouleSimulation, bg="green", highlightbackground=secondaryColorStr)
+animationBoule.place(relx=0.025, rely=0.05, relheight=0.8, relwidth=0.95)
+FgElements.append(animationBoule)
+borderElements.append(animationBoule)
 
-hauteurBouleLabel = Label(toolsButtons, text="Hauteur de la boule\n(mètres)", bg=secondaryColorStr, fg=mainColorStr,  font=mainFont)
-hauteurBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, insertbackground=secondaryColorStr, highlightthickness=0, font=mainFont)
-rayonBouleLabel = Label(toolsButtons, text="Rayon de la boule\n(mètres)", bg=secondaryColorStr, fg=mainColorStr, font=mainFont)
-rayonBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, insertbackground=secondaryColorStr, highlightthickness=0, font=mainFont)
-masseBouleLabel = Label(toolsButtons, text="Masse de la boule\n(en tonnes)", bg=secondaryColorStr, fg=mainColorStr, font=mainFont)
-masseBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, insertbackground=secondaryColorStr, highlightthickness=0, font=mainFont)
+InfosBoule = Canvas(bouleSimulation, bg="red", highlightbackground=secondaryColorStr)
+InfosBoule.place(relx=0.025, rely=0.9, relwidth=0.95, relheight=0.09)
 
-BgFgElements.append(hauteurBoule)
-FgBgElements.append(hauteurBouleLabel)
-BgFgElements.append(rayonBoule)
-FgBgElements.append(rayonBouleLabel)
-BgFgElements.append(masseBoule)
-FgBgElements.append(masseBouleLabel)
+startBouleSimulation = Button(animationBoule, bg=mainColorStr, highlightbackground=secondaryColorStr, text="Lancer", command=startBouleSimulationFunc)
+startBouleSimulation.place(relx=0, rely=0)
 
-hauteurBoule.insert(0, 100)
-rayonBoule.insert(0, 20)
-masseBoule.insert(0, 100000)
-
-startBouleSimulation = Button(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, text="Lancer la boule", command=startBouleSimulationFunc, cursor="hand2", font=mainFont)
-BgFgElements.append(startBouleSimulation)
 
 
 # Pied de page #
