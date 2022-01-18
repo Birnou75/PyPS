@@ -19,7 +19,7 @@ import numpy as np
 from math import *
 
 pyps = Tk()
-pyps.minsize(width=700, height=625)
+pyps.minsize(width=900, height=625)
 
 
 # --------------------------------------------------------------------
@@ -73,7 +73,6 @@ def simulationSettings(paned, enable):
             threadPendule.pack(fill=X)
             gravityPendule.pack(fill=X)
             timePendule.pack(fill=X)
-
         else:
             toolsButtons.place_forget()
             anglePendule.pack_forget()
@@ -83,11 +82,11 @@ def simulationSettings(paned, enable):
     if(paned == bouleSimulation):
         if(enable == True):
             toolsButtons.place(rely=0.12, relx=0.087, relwidth=0.82, relheight=0.8)
-            hauteurBouleLabel.pack(pady=10)
+            hauteurBouleLabel.pack(pady=7)
             hauteurBoule.pack(fill=X)
-            rayonBouleLabel.pack(pady=10)
+            rayonBouleLabel.pack(pady=7)
             rayonBoule.pack(fill=X)
-            masseBouleLabel.pack(pady=10)
+            masseBouleLabel.pack(pady=7)
             masseBoule.pack(fill=X)
             startBouleSimulation.place(relx=0.07, rely=0.75, relwidth=0.86, relheight=0.2)
         else:
@@ -177,9 +176,9 @@ def startBouleSimulationFunc():
 	explosion3.pencolor("white")
 
 	#--------Paramètres-----------
-	h = float(input("Choisissez la hauteur en mètres \n"))
-	r = float(input("Choisissez le rayon de la boule en mètres \n"))
-	m = float(input("Choisissez la masse de la boule en kg \n"))
+	h = float(hauteurBoule.get())
+	r = float(rayonBoule.get())
+	m = float(masseBoule.get())*1000
 	#--------Constantes----------
 	g = 9.8
 	#--------Paramétrage de l'échelle----------
@@ -279,7 +278,7 @@ def startBouleSimulationFunc():
 # Fonctions relatifs aux "Options"
     # Couleurs
 mainColorStr = "#232369"
-secondaryColorStr = "#ffffff"
+secondaryColorStr = "white"
 
 def changeColorElements(colorPlace, color):
     if(colorPlace == 1):
@@ -340,7 +339,7 @@ def changeBlueSecondaryColor(newBlue):
 
 	# Sauvegarde
 def saveConfig():
-    saveConfig = tkinter.filedialog.asksaveasfilename(title="Enregistrer une sauvegarde", filetypes=[("Fichier texte", ".txt")],              initialfile="Sauvegarde_PyPS.txt", defaultextension=".txt", initialdir=saveConfigPath, parent=pyps)
+    saveConfig = tkinter.filedialog.asksaveasfilename(title="Enregistrer une sauvegarde", filetypes=[("Fichier texte", ".txt")], initialfile="Sauvegarde_PyPS.txt", defaultextension=".txt", initialdir=saveConfigPath, parent=pyps)
     saveConfigFile = open(saveConfig, "w")
 
     fileLines = [
@@ -386,7 +385,6 @@ mainFont = "Roboto 12 bold"
 pyps.title("PyPS | Python Physics Simulator")
 pyps.geometry("900x600")
 # pyps.iconbitmap("pyps_logo.ico")
-
 
 # En-tête #
 header = Frame(pyps, bg=mainColorStr, highlightbackground=secondaryColorStr)
@@ -540,7 +538,7 @@ loadSaveButton.place(relx=0.51, rely=0.43, relwidth=0.45, relheight=0.35)
 BgFgElements.append(loadSaveButton)
 
 # Paramètres options
-toolsButtons = Canvas(tools, bg=mainColorStr, highlightbackground=secondaryColorStr)
+toolsButtons = Canvas(tools, bg=secondaryColorStr, highlightthickness=0)
 FgElements.append(toolsButtons)
 borderElements.append(toolsButtons)
 
@@ -548,7 +546,7 @@ borderElements.append(toolsButtons)
 penduleSimulation = PanedWindow(main, bg=secondaryColorStr)
 FgElements.append(penduleSimulation)
 
-anglePendule = Scale(toolsButtons, orient="horizontal", from_=0, to=180, resolution=1, tickinterval=90, label='anglePendule (deg)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeThetaMax, font=mainFont)
+anglePendule = Scale(toolsButtons, orient="horizontal", from_=0, to=180, resolution=1, tickinterval=90, label='Angle (deg)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeThetaMax, font=mainFont)
 threadPendule = Scale(toolsButtons, orient="horizontal", from_=1, to=3, resolution=0.01, tickinterval=1, label='Longueur du fil (mètres)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeR, font=mainFont)
 gravityPendule = Scale(toolsButtons, orient="horizontal", from_=1, to=10, resolution=1, tickinterval=2, label='Gravité (lieu)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeG, font=mainFont)
 timePendule = Scale(toolsButtons, orient="horizontal", from_=10, to=100, resolution=1, tickinterval=30, label='Temps de la simulation (sec)', bg=mainColorStr, fg=secondaryColorStr, troughcolor=secondaryColorStr, command=changeT, font=mainFont)
@@ -607,25 +605,25 @@ animationBouleCanvas.place(relx=0.025, rely=0.05, relheight=0.8, relwidth=0.95)
 FgElements.append(animationBouleCanvas)
 borderElements.append(animationBouleCanvas)
 
-hauteurBouleLabel = Label(toolsButtons, text="Hauteur de la boule", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
-hauteurBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
-rayonBouleLabel = Label(toolsButtons, text="Rayon de la boule", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
-rayonBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
-masseBouleLabel = Label(toolsButtons, text="Hauteur de la boule", bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
-masseBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, font=mainFont)
+hauteurBouleLabel = Label(toolsButtons, text="Hauteur de la boule\n(mètres)", bg=secondaryColorStr, fg=mainColorStr,  font=mainFont)
+hauteurBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, insertbackground=secondaryColorStr, highlightthickness=0, font=mainFont)
+rayonBouleLabel = Label(toolsButtons, text="Rayon de la boule\n(mètres)", bg=secondaryColorStr, fg=mainColorStr, font=mainFont)
+rayonBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, insertbackground=secondaryColorStr, highlightthickness=0, font=mainFont)
+masseBouleLabel = Label(toolsButtons, text="Masse de la boule\n(en tonnes)", bg=secondaryColorStr, fg=mainColorStr, font=mainFont)
+masseBoule = Entry(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, insertbackground=secondaryColorStr, highlightthickness=0, font=mainFont)
 
 BgFgElements.append(hauteurBoule)
-BgFgElements.append(hauteurBouleLabel)
+FgBgElements.append(hauteurBouleLabel)
 BgFgElements.append(rayonBoule)
-BgFgElements.append(rayonBouleLabel)
+FgBgElements.append(rayonBouleLabel)
 BgFgElements.append(masseBoule)
-BgFgElements.append(masseBouleLabel)
+FgBgElements.append(masseBouleLabel)
 
 hauteurBoule.insert(0, 100)
 rayonBoule.insert(0, 20)
 masseBoule.insert(0, 100000)
 
-startBouleSimulation = Button(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, text="Faire chuter la boule", command=startBouleSimulationFunc, cursor="hand2", font=mainFont)
+startBouleSimulation = Button(toolsButtons, bg=mainColorStr, fg=secondaryColorStr, text="Lancer la boule", command=startBouleSimulationFunc, cursor="hand2", font=mainFont)
 BgFgElements.append(startBouleSimulation)
 
 
